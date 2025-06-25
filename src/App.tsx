@@ -1,29 +1,48 @@
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+import { useState } from "react";
 import { useLinera } from "./Provider/LineraWebClientProvider";
+import { useNavigate } from "react-router-dom";
 
 function App() {
-  const { client, application, chain, status } = useLinera();
+  const { chain, status } = useLinera();
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [authenticated, setAuthenticated] = useState(false);
+  const navigate = useNavigate();
+
+  const handlePassword = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (password === "admin123") {
+      setAuthenticated(true);
+      navigate("/dashboard");
+    } else {
+      setError("Password salah!");
+    }
+
+    console.log("Password submitted:", authenticated);
+  };
 
   return (
-    <>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       {chain !== null && status === "Ready" ? (
         <>
-          {/* 
-          Fitur yang harus ada:
-            - Check adakah turnamen yang sedang berlangsung
-            - Fitur untuk membuat turnamen baru
-            - Fitur untuk Menghentiken turnamen
-            - Fitur untuk melihat leaderboard
-        */}
-          <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-            <div className="flex items-center gap-4 mb-8">
-              <img src={viteLogo} className="h-24" alt="Vite logo" />
-              <img src={reactLogo} className="h-24" alt="React logo" />
-            </div>
-            <h1 className="text-3xl font-bold mb-4">Linera Web Client</h1>
-            <p className="text-lg mb-2">Chain ID: {chain}</p>
-          </div>
+          <h1 className="text-2xl font-bold mb-4">Chain Catcher Admin Login</h1>
+          <form onSubmit={handlePassword} className="flex flex-col gap-4 w-72">
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="p-2 rounded border"
+              required
+            />
+            {error && <p className="text-red-500">{error}</p>}
+            <button
+              type="submit"
+              className="bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+            >
+              Login
+            </button>
+          </form>
         </>
       ) : (
         <button
@@ -51,7 +70,7 @@ function App() {
           <span>Requesting Chain ID...</span>
         </button>
       )}
-    </>
+    </div>
   );
 }
 
